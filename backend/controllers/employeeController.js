@@ -1,6 +1,11 @@
 const { validationResult } = require("express-validator");
 const Employee = require("../models/Employee");
 
+// Escape special RegExp characters from user-controlled search input
+const escapeRegex = (text) => {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
+
 const createEmployee = async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -62,6 +67,58 @@ const getAllEmployees = async (req, res) => {
     });
   } catch (error) {
     console.error("Get employees error:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+};
+
+const searchEmployees = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: errors.array()
+      });
+    }
+
+    const { department, position } = req.query;
+
+    // Ownership is always enforced server-side.
+    const searchQuery = {
+      user: req.user.id
+    };
+
+    if (department) {
+      searchQuery.department = {
+        $regex: escapeRegex(department.trim()),
+        $options: "i"
+      };
+    }
+
+    if (position) {
+      searchQuery.position = {
+        $regex: escapeRegex(position.trim()),
+        $options: "i"
+      };
+    }
+
+    const employees = await Employee.find(searchQuery).sort({
+      created_at: -1
+    });
+
+    return res.status(200).json({
+      success: true,
+      count: employees.length,
+      employees
+    });
+  } catch (error) {
+    console.error("Search employees error:", error.message);
 
     return res.status(500).json({
       success: false,
@@ -219,6 +276,7 @@ const deleteEmployee = async (req, res) => {
 module.exports = {
   createEmployee,
   getAllEmployees,
+  searchEmployees,
   getEmployeeById,
   updateEmployee,
   deleteEmployee

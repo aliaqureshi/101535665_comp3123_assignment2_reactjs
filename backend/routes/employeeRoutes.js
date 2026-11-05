@@ -3,6 +3,7 @@ const express = require("express");
 const {
   createEmployee,
   getAllEmployees,
+  searchEmployees,
   getEmployeeById,
   updateEmployee,
   deleteEmployee
@@ -13,17 +14,20 @@ const protect = require("../middleware/authMiddleware");
 const {
   employeeValidator,
   employeeIdParamValidator,
-  employeeIdQueryValidator
+  employeeIdQueryValidator,
+  employeeSearchValidator
 } = require("../validators/employeeValidator");
 
 const router = express.Router();
 
+// Get all employees owned by authenticated user
 router.get(
   "/employees",
   protect,
   getAllEmployees
 );
 
+// Create employee
 router.post(
   "/employees",
   protect,
@@ -31,6 +35,16 @@ router.post(
   createEmployee
 );
 
+// Search employees by department and/or position.
+// IMPORTANT: Keep this route before /employees/:eid.
+router.get(
+  "/employees/search",
+  protect,
+  employeeSearchValidator,
+  searchEmployees
+);
+
+// Get one employee
 router.get(
   "/employees/:eid",
   protect,
@@ -38,6 +52,7 @@ router.get(
   getEmployeeById
 );
 
+// Update employee
 router.put(
   "/employees/:eid",
   protect,
@@ -46,6 +61,7 @@ router.put(
   updateEmployee
 );
 
+// Delete employee using the required ?eid= query parameter.
 router.delete(
   "/employees",
   protect,

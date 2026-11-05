@@ -66,8 +66,41 @@ const employeeIdQueryValidator = [
     .withMessage("Employee ID must be a valid MongoDB ObjectId")
 ];
 
+const employeeSearchValidator = [
+  query("department")
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Department must be between 1 and 100 characters"),
+
+  query("position")
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Position must be between 1 and 100 characters"),
+
+  query("department").custom((department, { req }) => {
+    const cleanDepartment =
+      typeof department === "string" ? department.trim() : "";
+
+    const cleanPosition =
+      typeof req.query.position === "string"
+        ? req.query.position.trim()
+        : "";
+
+    if (!cleanDepartment && !cleanPosition) {
+      throw new Error(
+        "At least one search parameter, department or position, is required"
+      );
+    }
+
+    return true;
+  })
+];
+
 module.exports = {
   employeeValidator,
   employeeIdParamValidator,
-  employeeIdQueryValidator
+  employeeIdQueryValidator,
+  employeeSearchValidator
 };
