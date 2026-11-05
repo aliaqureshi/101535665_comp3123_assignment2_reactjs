@@ -1,0 +1,358 @@
+{
+  "info": {
+    "_postman_id": "c5f296a7-94ad-43aa-a7ab-e269d132c4b3",
+    "name": "COMP3123 Assignment 2 - 101535665",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58159934",
+    "_collection_link": "https://go.postman.co/collection/58159934-c5f296a7-94ad-43aa-a7ab-e269d132c4b3?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "User Signup",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/user/signup",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"postman101535665\",\n  \"email\": \"postman101535665@example.com\",\n  \"password\": \"PostmanTest123\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "User Login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/user/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"login\": \"postman101535665\",\n  \"password\": \"PostmanTest123\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const json = pm.response.json();",
+              "    if (json.token) {",
+              "        pm.collectionVariables.set('token', json.token);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get All Employees",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/emp/employees",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Create Employee With Profile Picture",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/emp/employees",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "first_name",
+              "value": "Postman",
+              "type": "text"
+            },
+            {
+              "key": "last_name",
+              "value": "Employee",
+              "type": "text"
+            },
+            {
+              "key": "email",
+              "value": "postman.employee@example.com",
+              "type": "text"
+            },
+            {
+              "key": "position",
+              "value": "Software Developer",
+              "type": "text"
+            },
+            {
+              "key": "salary",
+              "value": "75000",
+              "type": "text"
+            },
+            {
+              "key": "date_of_joining",
+              "value": "2026-11-05",
+              "type": "text"
+            },
+            {
+              "key": "department",
+              "value": "Engineering",
+              "type": "text"
+            },
+            {
+              "key": "profile_picture",
+              "type": "file",
+              "src": []
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    const json = pm.response.json();",
+              "    const employee = json.employee || json;",
+              "    if (employee._id) {",
+              "        pm.collectionVariables.set('employeeId', employee._id);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search Employees by Department",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/emp/employees/search?department=Engineering",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Search Employees by Position",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/emp/employees/search?position=Developer",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Search Employees by Department and Position",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/emp/employees/search?department=Engineering&position=Developer",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Employee by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/emp/employees/{{employeeId}}",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Update Employee With Profile Picture",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/emp/employees/{{employeeId}}",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "first_name",
+              "value": "Postman",
+              "type": "text"
+            },
+            {
+              "key": "last_name",
+              "value": "Employee",
+              "type": "text"
+            },
+            {
+              "key": "email",
+              "value": "postman.employee@example.com",
+              "type": "text"
+            },
+            {
+              "key": "position",
+              "value": "Senior Software Developer",
+              "type": "text"
+            },
+            {
+              "key": "salary",
+              "value": "85000",
+              "type": "text"
+            },
+            {
+              "key": "date_of_joining",
+              "value": "2026-11-05",
+              "type": "text"
+            },
+            {
+              "key": "department",
+              "value": "Engineering",
+              "type": "text"
+            },
+            {
+              "key": "profile_picture",
+              "type": "file",
+              "src": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Delete Employee",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/api/v1/emp/employees?eid={{employeeId}}",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/health"
+      }
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "employeeId",
+      "value": ""
+    }
+  ]
+}
