@@ -1,6 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const helmet = require("helmet");
+const cors = require("cors");
 
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
@@ -14,7 +15,6 @@ const {
 dotenv.config();
 
 const app = express();
-
 const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB
@@ -23,16 +23,27 @@ connectDB();
 // Security middleware
 app.use(helmet());
 
+// CORS middleware
+// Allows the React frontend to communicate with the backend API.
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+  })
+);
+
 // Request logging middleware
 app.use(logger);
 
 // Body parsing middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Root route
 app.get("/", (req, res) => {
   res.status(200).json({
-    message: "COMP3123 Assignment 1 API",
+    message: "COMP3123 Assignment 2 API",
     student: "Alia Qureshi",
     studentNumber: "101535665"
   });
