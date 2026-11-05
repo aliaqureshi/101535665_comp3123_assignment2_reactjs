@@ -10,6 +10,7 @@ const {
 } = require("../controllers/employeeController");
 
 const protect = require("../middleware/authMiddleware");
+const upload = require("../middleware/uploadMiddleware");
 
 const {
   employeeValidator,
@@ -27,10 +28,11 @@ router.get(
   getAllEmployees
 );
 
-// Create employee
+// Create employee with optional profile picture
 router.post(
   "/employees",
   protect,
+  upload.single("profile_picture"),
   employeeValidator,
   createEmployee
 );
@@ -52,16 +54,17 @@ router.get(
   getEmployeeById
 );
 
-// Update employee
+// Update employee with optional profile picture
 router.put(
   "/employees/:eid",
   protect,
   employeeIdParamValidator,
+  upload.single("profile_picture"),
   employeeValidator,
   updateEmployee
 );
 
-// Delete employee using the required ?eid= query parameter.
+// Delete employee using the required ?eid= query parameter
 router.delete(
   "/employees",
   protect,

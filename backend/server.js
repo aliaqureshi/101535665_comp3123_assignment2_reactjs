@@ -2,11 +2,13 @@ const express = require("express");
 const dotenv = require("dotenv");
 const helmet = require("helmet");
 const cors = require("cors");
+const path = require("path");
 
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
 const logger = require("./middleware/logger");
+
 const {
   notFound,
   errorHandler
@@ -20,11 +22,17 @@ const PORT = process.env.PORT || 3000;
 // Connect to MongoDB
 connectDB();
 
-// Security middleware
-app.use(helmet());
+// Security middleware.
+// Allow profile images served by this API to be displayed by the React frontend.
+app.use(
+  helmet({
+    crossOriginResourcePolicy: {
+      policy: "cross-origin"
+    }
+  })
+);
 
 // CORS middleware
-// Allows the React frontend to communicate with the backend API.
 app.use(
   cors({
     origin: process.env.CLIENT_URL || "http://localhost:5173",
@@ -39,6 +47,12 @@ app.use(logger);
 // Body parsing middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve uploaded profile pictures
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"))
+);
 
 // Root route
 app.get("/", (req, res) => {

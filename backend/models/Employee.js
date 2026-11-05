@@ -56,6 +56,11 @@ const employeeSchema = new mongoose.Schema(
       maxlength: [100, "Department cannot exceed 100 characters"]
     },
 
+    profile_picture: {
+      type: String,
+      default: null
+    },
+
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -71,4 +76,4 @@ const employeeSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Employee", employeeSchema); 
+module.exports = mongoose.model("Employee", employeeSchema);
