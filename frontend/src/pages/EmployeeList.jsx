@@ -55,9 +55,10 @@ const EmployeeList = () => {
         params.position = position.trim();
       }
 
-      const response = await api.get("/emp/employees/search", {
-        params,
-      });
+      const response = await api.get(
+        "/emp/employees/search",
+        { params }
+      );
 
       setEmployees(response.data.employees || []);
     } catch (err) {
@@ -86,6 +87,7 @@ const EmployeeList = () => {
 
     try {
       setError("");
+
       await api.delete("/emp/employees", {
         params: { eid: employee._id },
       });
@@ -111,23 +113,39 @@ const EmployeeList = () => {
         <div className="page-header">
           <div>
             <h1>Employees</h1>
-            <p>View, search and manage your employee records.</p>
+            <p>
+              View, search and manage your employee records.
+            </p>
           </div>
 
-          <Link to="/employees/add" className="btn btn-primary">
+          <Link
+            to="/employees/add"
+            className="btn btn-primary"
+          >
             + Add Employee
           </Link>
         </div>
 
-        {error && <div className="alert alert-error">{error}</div>}
-        {message && (
-          <div className="alert alert-success">{message}</div>
+        {error && (
+          <div className="alert alert-error">{error}</div>
         )}
 
-        <form className="search-card" onSubmit={handleSearch}>
+        {message && (
+          <div className="alert alert-success">
+            {message}
+          </div>
+        )}
+
+        <form
+          className="search-card"
+          onSubmit={handleSearch}
+        >
           <div className="search-fields">
             <div className="form-group">
-              <label htmlFor="department">Department</label>
+              <label htmlFor="department">
+                Department
+              </label>
+
               <input
                 id="department"
                 value={department}
@@ -139,7 +157,10 @@ const EmployeeList = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="position">Position</label>
+              <label htmlFor="position">
+                Position
+              </label>
+
               <input
                 id="position"
                 value={position}
@@ -172,92 +193,170 @@ const EmployeeList = () => {
         </form>
 
         {loading ? (
-          <div className="status-card">Loading employees...</div>
+          <div className="status-card">
+            Loading employees...
+          </div>
         ) : employees.length === 0 ? (
           <div className="status-card">
             <h2>No employees found</h2>
             <p>
-              Add an employee or change your search criteria.
+              Add an employee or change your search
+              criteria.
             </p>
           </div>
         ) : (
-          <div className="employee-grid">
-            {employees.map((employee) => (
-              <article
-                className="employee-card"
-                key={employee._id}
-              >
-                <div className="employee-card-top">
-                  {employee.profile_picture ? (
-                    <img
-                      className="employee-avatar"
-                      src={getImageUrl(employee.profile_picture)}
-                      alt={`${employee.first_name} ${employee.last_name}`}
-                    />
-                  ) : (
-                    <div className="employee-avatar placeholder">
-                      {employee.first_name?.[0]}
-                      {employee.last_name?.[0]}
-                    </div>
-                  )}
+          <div
+            className="employee-table-wrapper"
+            style={{
+              overflowX: "auto",
+              background: "#ffffff",
+              borderRadius: "14px",
+              boxShadow:
+                "0 4px 18px rgba(0, 0, 0, 0.08)",
+            }}
+          >
+            <table
+              className="employee-table"
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                minWidth: "850px",
+              }}
+            >
+              <thead>
+                <tr
+                  style={{
+                    borderBottom: "1px solid #e5e7eb",
+                    textAlign: "left",
+                  }}
+                >
+                  <th style={{ padding: "18px" }}>
+                    Profile
+                  </th>
 
-                  <div>
-                    <h2>
-                      {employee.first_name} {employee.last_name}
-                    </h2>
-                    <p className="employee-position">
+                  <th style={{ padding: "18px" }}>
+                    Name
+                  </th>
+
+                  <th style={{ padding: "18px" }}>
+                    Position
+                  </th>
+
+                  <th style={{ padding: "18px" }}>
+                    Department
+                  </th>
+
+                  <th style={{ padding: "18px" }}>
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {employees.map((employee) => (
+                  <tr
+                    key={employee._id}
+                    style={{
+                      borderBottom:
+                        "1px solid #e5e7eb",
+                    }}
+                  >
+                    <td style={{ padding: "18px" }}>
+                      {employee.profile_picture ? (
+                        <img
+                          className="employee-avatar"
+                          src={getImageUrl(
+                            employee.profile_picture
+                          )}
+                          alt={`${employee.first_name} ${employee.last_name}`}
+                          style={{
+                            width: "58px",
+                            height: "58px",
+                            objectFit: "cover",
+                            borderRadius: "50%",
+                          }}
+                        />
+                      ) : (
+                        <div
+                          className="employee-avatar placeholder"
+                          style={{
+                            width: "58px",
+                            height: "58px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            borderRadius: "50%",
+                          }}
+                        >
+                          {employee.first_name?.[0]}
+                          {employee.last_name?.[0]}
+                        </div>
+                      )}
+                    </td>
+
+                    <td style={{ padding: "18px" }}>
+                      <strong>
+                        {employee.first_name}{" "}
+                        {employee.last_name}
+                      </strong>
+
+                      <div
+                        style={{
+                          marginTop: "4px",
+                          fontSize: "0.9rem",
+                          color: "#6b7280",
+                        }}
+                      >
+                        {employee.email}
+                      </div>
+                    </td>
+
+                    <td style={{ padding: "18px" }}>
                       {employee.position}
-                    </p>
-                  </div>
-                </div>
+                    </td>
 
-                <div className="employee-info">
-                  <span>
-                    <strong>Department:</strong>{" "}
-                    {employee.department}
-                  </span>
+                    <td style={{ padding: "18px" }}>
+                      {employee.department}
+                    </td>
 
-                  <span>
-                    <strong>Email:</strong> {employee.email}
-                  </span>
+                    <td style={{ padding: "18px" }}>
+                      <div
+                        className="card-actions"
+                        style={{
+                          display: "flex",
+                          gap: "8px",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <Link
+                          to={`/employees/${employee._id}`}
+                          className="btn btn-secondary"
+                        >
+                          View
+                        </Link>
 
-                  <span>
-                    <strong>Salary:</strong>{" "}
-                    {Number(employee.salary).toLocaleString(
-                      "en-CA",
-                      {
-                        style: "currency",
-                        currency: "CAD",
-                      }
-                    )}
-                  </span>
-                </div>
+                        <Link
+                          to={`/employees/${employee._id}/edit`}
+                          className="btn btn-secondary"
+                        >
+                          Edit
+                        </Link>
 
-                <div className="card-actions">
-                  <Link
-                    to={`/employees/${employee._id}`}
-                    className="btn btn-secondary"
-                  >
-                    View
-                  </Link>
-
-                  <Link
-                    to={`/employees/${employee._id}/edit`}
-                    className="btn btn-secondary"
-                  >
-                    Edit
-                  </Link>
-
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={() => handleDelete(employee)}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </article>
-            ))}
+                        <button
+                          type="button"
+                          className="btn btn-danger"
+                          onClick={() =>
+                            handleDelete(employee)
+                          }
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </main>
